@@ -8,5 +8,6 @@ namespace TaskManager_Toshmatov.ViewModels
 {
     public class VM_Pages
     {
+
     }
 }
