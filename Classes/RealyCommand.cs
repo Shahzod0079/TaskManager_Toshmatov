@@ -14,6 +14,12 @@ namespace TaskManager_Toshmatov.Classes
         private Action<object> execute;
 
         private Func<object, bool> canExecute;
+        private Action<object> value;
+
+        public RealyCommand(Action<object> value)
+        {
+            this.value = value;
+        }
 
         public RealyCommand(Action<object> execute, Func<object, bool> canExecute)
         {
