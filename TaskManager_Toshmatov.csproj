@@ -182,6 +182,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classes\Database\Config.cs" />
+    <Compile Include="Classes\Notification.cs" />
+    <Compile Include="Classes\RealyCommand.cs" />
     <Compile Include="ViewModels\VM_Pages.cs" />
     <Compile Include="View\Items\Item.xaml.cs">
       <DependentUpon>Item.xaml</DependentUpon>
