@@ -1,4 +1,6 @@
 ﻿using TaskManager_Toshmatov.Classes;
+using TaskManager_Toshmatov.View;
+
 
 namespace TaskManager_Toshmatov.ViewModels
 {
@@ -6,20 +8,20 @@ namespace TaskManager_Toshmatov.ViewModels
     {
         public VM_Tasks vm_Tasks = new VM_Tasks();
 
-        public VM_Pages() {
-            MainWindow.init.frame.Navigate(new Views.Main(vm_Tasks));
+        public VM_Pages()
+        {
 
+            MainWindow.init.frame.Navigate(new Main(vm_Tasks));
         }
+
         public RealyCommand OnClose
         {
             get
             {
-                return new RealyCommand(obj =>
-                {
-                    MainWindow.init.Close();
+                return new RealyCommand(obj => {
+                    MainWindow.init.Close(); 
                 });
             }
         }
-
     }
 }

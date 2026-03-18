@@ -2,78 +2,84 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Windows;
-using Schema = System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
+using TaskManager_Toshmatov.ViewModels;
+using System.Xml.Linq;
 
-namespace TaskManager_Toshmatov.Modell
+namespace TaskManager_Toshmatov.Models
 {
     public class Tasks : Notification
     {
         public int Id { get; set; }
 
         private string name;
-
-        public string Name 
-            { 
+        public string Name
+        {
             get { return name; }
             set
             {
-                Match match = Regex.Match(value, "^.{1,50}$");
-                if (match.Success)
-                    MessageBox.Show("Наименование не доожно быть пустым, и не более 50 символов.",
+                if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
+                {
+                    MessageBox.Show("Наименование не должно быть пустым, и не более 50 символов.",
                         "Некорректный ввод значения.");
+                }
                 else
                 {
                     name = value;
                     OnPropertyChanged("Name");
-
-                } 
+                }
             }
         }
-        public string Prority;
 
+        private string priority;
         public string Priority
         {
-            get { return Priority; }
+            get { return priority; }
             set
             {
-                Match match = Regex.Match(value, "^.{1,30}$");
-                if (match.Success)
-                    MessageBox.Show("Приоритет не доожно быть пустым, и не более 30 символов.",
+                if (string.IsNullOrWhiteSpace(value) || value.Length > 30)
+                {
+                    MessageBox.Show("Приоритет не должен быть пустым, и не более 30 символов.",
                         "Некорректный ввод значения.");
+                }
                 else
                 {
-                    Priority = value;
+                    priority = value;
                     OnPropertyChanged("Priority");
                 }
             }
         }
-        private DateTime DateExecute
+
+        private DateTime dateExecute;
+        public DateTime DateExecute
         {
-            get { return DateExecute; }
+            get { return dateExecute; }
             set
             {
                 if (value.Date < DateTime.Now.Date)
+                {
                     MessageBox.Show("Дата выполнения не может быть меньше текущей.",
-                        "Не корректный ввод значения.");
+                        "Некорректный ввод значения.");
+                }
                 else
                 {
-                    DateExecute = value;
+                    dateExecute = value;
                     OnPropertyChanged("DateExecute");
-
                 }
             }
         }
-        private string comment;
 
+        private string comment;
         public string Comment
         {
             get { return comment; }
             set
             {
-                Match match = Regex.Match(value, "^.{1,1000}$");
-                if (match.Success)
-                    MessageBox.Show("Кометарий не доожно быть пустым, и не более 1000 символов.",
+                if (!string.IsNullOrWhiteSpace(value) && value.Length > 1000)
+                {
+                    MessageBox.Show("Комментарий не более 1000 символов.",
                         "Некорректный ввод значения.");
+                }
                 else
                 {
                     comment = value;
@@ -81,11 +87,11 @@ namespace TaskManager_Toshmatov.Modell
                 }
             }
         }
-        public bool done;
 
-        private string Done
+        private bool done;
+        public bool Done
         {
-            get { return Done; }
+            get { return done; }
             set
             {
                 done = value;
@@ -94,12 +100,9 @@ namespace TaskManager_Toshmatov.Modell
             }
         }
 
-        [Schema.NotMapped]
         private bool isEnable;
-
-        [Schema.NotMapped]
-
-        private bool IsEnable
+        [NotMapped]
+        public bool IsEnable
         {
             get { return isEnable; }
             set
@@ -107,31 +110,30 @@ namespace TaskManager_Toshmatov.Modell
                 isEnable = value;
                 OnPropertyChanged("IsEnable");
                 OnPropertyChanged("IsEnableText");
-
             }
         }
-        [Schema.NotMapped]
-        
+
+        [NotMapped]
         public string IsEnableText
         {
             get
             {
                 if (IsEnable) return "Сохранить";
                 else return "Изменить";
-
             }
         }
-        [Schema.NotMapped]
+
+        [NotMapped]
         public string IsDoneText
         {
             get
             {
-                if (Done) return "Не выполнено";
-                else return "Выполнено";
+                if (Done) return "Выполнено";
+                else return "Не выполнено";
             }
         }
-        [Schema.NotMapped]
 
+        [NotMapped]
         public RealyCommand OnEdit
         {
             get
@@ -141,11 +143,15 @@ namespace TaskManager_Toshmatov.Modell
                     IsEnable = !IsEnable;
 
                     if (!IsEnable)
-                        (MainWindow.init.DataContext as ViewModels.VM_Pages).vm_tasks.tasksContext.SaveChanges();
+                    {
+                        var vm = MainWindow.init.DataContext as VM_Pages;
+                        vm?.vm_Tasks.tasksContext.SaveChanges();
+                    }
                 });
             }
         }
-        [Schema.NotMapped]
+
+        [NotMapped]
         public RealyCommand OnDelete
         {
             get
@@ -155,16 +161,19 @@ namespace TaskManager_Toshmatov.Modell
                     if (MessageBox.Show("Вы уверены что хотите удалить задачу?",
                         "Предупреждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     {
-                        (MainWindow.init.DataContext as ViewModels.VM_Pages).vm_tasks.Tasks.Remove(this);
-                        (MainWindow.init.DataContext as ViewModels.VM_Pages).vm_tasks.tasksContext.Remove(this);
-                        (MainWindow.init.DataContext as ViewModels.VM_Pages).vm_tasks.tasksContext.SaveChanges(this);
-
+                        var vm = MainWindow.init.DataContext as VM_Pages;
+                        if (vm != null)
+                        {
+                            vm.vm_Tasks.Tasks.Remove(this);
+                            vm.vm_Tasks.tasksContext.Tasks.Remove(this);
+                            vm.vm_Tasks.tasksContext.SaveChanges();
+                        }
                     }
                 });
             }
         }
-        [Schema.NotMapped]
 
+        [NotMapped]
         public RealyCommand OnDone
         {
             get
@@ -175,4 +184,5 @@ namespace TaskManager_Toshmatov.Modell
                 });
             }
         }
+    }
 }

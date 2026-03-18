@@ -1,24 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using TaskManager_Toshmatov.Classes;
 using TaskManager_Toshmatov.Context;
+using TaskManager_Toshmatov.Models;
 
 namespace TaskManager_Toshmatov.ViewModels
 {
-    public class VM_Tasks : Motification
+    public class VM_Tasks : Notification
     {
         public TasksContext tasksContext = new TasksContext();
 
-        public ObservableCollectionExtensions<Tasks> Tasks {get; set;}
+        public ObservableCollection<Tasks> Tasks { get; set; }
 
-        public VM_Tasks() => 
-            Tasks = new ObservableCollectionExtensions<Tasks>(tasksContext.Tasks.OrderBy(x => x.done));
+        public VM_Tasks()
+        {
+            Tasks = new ObservableCollection<Tasks>(tasksContext.Tasks.OrderBy(x => x.Done));
+        }
 
-        public RealyCommand onAddTask
+        public RealyCommand OnAddTask
         {
             get
             {
@@ -28,7 +28,9 @@ namespace TaskManager_Toshmatov.ViewModels
                     {
                         DateExecute = DateTime.Now
                     };
+
                     Tasks.Add(newTask);
+
                     tasksContext.Tasks.Add(newTask);
                     tasksContext.SaveChanges();
                 });

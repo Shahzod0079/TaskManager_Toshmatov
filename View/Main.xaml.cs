@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TaskManager_Toshmatov.ViewModels;
 
 namespace TaskManager_Toshmatov.View
 {
@@ -20,10 +21,10 @@ namespace TaskManager_Toshmatov.View
     /// </summary>
     public partial class Main : Page
     {
-        public Main()
+        public Main(VM_Tasks vm)
         {
             InitializeComponent();
-            DataContext = DataContext;
+            DataContext = vm;
         }
     }
 }
