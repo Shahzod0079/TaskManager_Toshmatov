@@ -54,7 +54,7 @@
                     <DropShadowEffect Opacity="0.1"/>
                 </Grid.Effect>
                 <Label Content="Коментарий:" VerticalAlignment="Top" Margin="10,0,10,0"/>
-                <DatePicker Text="{Binding Comment}" IsEnabled="{Binding IsEnable}" VerticalContentAlignment="Center" Margin="10,25,10,0" VerticalAlignment="Top" Height="25"/>
+                <TextBox Text="{Binding Comment}" IsEnabled="{Binding IsEnable}" VerticalContentAlignment="Center" Margin="10,25,10,0" VerticalAlignment="Top" Height="25"/>
             </Grid>
             <Button Style="{StaticResource Update}" Command="{Binding OnEdit}" Content="{Binding IsEnableText}" Height="25" Width="70"
                     VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,145,10,0" Grid.Column="1">

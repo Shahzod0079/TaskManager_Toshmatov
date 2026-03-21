@@ -10,7 +10,8 @@ namespace TaskManager_Toshmatov.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql(Config.connection, Config.version);
+            optionsBuilder.UseMySql(Config.ConnectionConfig, mysqlOptions =>
+     mysqlOptions.ServerVersion(Config.Version));
         }
     }
 }

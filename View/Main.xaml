@@ -9,7 +9,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Main">
     <Page.Resources>
-        <Style TargetType="Button">
+        <Style x:Key="Update" TargetType="Button">
             <Setter Property="Background" Value="#FF4FC318" />
             <Setter Property="BorderBrush" Value="#FF4FC318" />
             <Setter Property="Foreground" Value="White" />
