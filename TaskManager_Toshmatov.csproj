@@ -185,6 +185,7 @@
     <Compile Include="Classes\Notification.cs" />
     <Compile Include="Classes\RealyCommand.cs" />
     <Compile Include="Context\TasksContext.cs" />
+    <Compile Include="Modell\Priority.cs" />
     <Compile Include="Modell\Tasks.cs" />
     <Compile Include="ViewModels\VM_Pages.cs" />
     <Compile Include="ViewModels\VM_Tasks.cs" />

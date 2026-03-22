@@ -1,10 +1,8 @@
 ﻿using TaskManager_Toshmatov.Classes;
 using System;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.ComponentModel.DataAnnotations.Schema;
 using TaskManager_Toshmatov.ViewModels;
-using System.Xml.Linq;
 
 namespace TaskManager_Toshmatov.Models
 {
@@ -31,22 +29,27 @@ namespace TaskManager_Toshmatov.Models
             }
         }
 
-        private string priority;
-        public string Priority
+        // Внешний ключ для Priority
+        private int? priorityId;
+        public int? PriorityId
+        {
+            get { return priorityId; }
+            set
+            {
+                priorityId = value;
+                OnPropertyChanged("PriorityId");
+            }
+        }
+
+        // Навигационное свойство
+        private Priority priority;
+        public virtual Priority Priority
         {
             get { return priority; }
             set
             {
-                if (string.IsNullOrWhiteSpace(value) || value.Length > 30)
-                {
-                    MessageBox.Show("Приоритет не должен быть пустым, и не более 30 символов.",
-                        "Некорректный ввод значения.");
-                }
-                else
-                {
-                    priority = value;
-                    OnPropertyChanged("Priority");
-                }
+                priority = value;
+                OnPropertyChanged("Priority");
             }
         }
 

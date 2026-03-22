@@ -40,7 +40,9 @@
                     <DropShadowEffect Opacity="0.1"/>
                 </Grid.Effect>
                 <Label Content="Приоритет:" VerticalAlignment="Top" Margin="10,0,10,0"/>
-                <TextBox Text="{Binding Priority}" IsEnabled="{Binding IsEnable}" VerticalContentAlignment="Center" Margin="10,25,10,0" VerticalAlignment="Top" Height="25"/>
+                <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Page}}, 
+                         Path=DataContext.Priorities}" DisplayMemberPath="Name" SelectedValue="{Binding PriorityId}"  SelectedValuePath="Id"
+                         IsEnabled="{Binding IsEnable}" Height="25" Margin="10,25,10,0"/>
             </Grid>
             <Grid Margin="10,10,10,0" Height="60" VerticalAlignment="Top" Background="White" Grid.Column="1">
                 <Grid.Effect>

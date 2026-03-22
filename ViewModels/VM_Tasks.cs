@@ -5,7 +5,7 @@ using System.Windows;
 using TaskManager_Toshmatov.Classes;
 using TaskManager_Toshmatov.Context;
 using TaskManager_Toshmatov.Models;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace TaskManager_Toshmatov.ViewModels
 {
@@ -13,9 +13,12 @@ namespace TaskManager_Toshmatov.ViewModels
     {
         public TasksContext tasksContext = new TasksContext();
         public ObservableCollection<Tasks> Tasks { get; set; }
-        private ObservableCollection<Tasks> allTasks; 
+        public ObservableCollection<Priority> Priorities { get; set; }
 
+        private ObservableCollection<Tasks> allTasks;
         private string searchText;
+        private Priority selectedPriority;
+
         public string SearchText
         {
             get { return searchText; }
@@ -23,50 +26,62 @@ namespace TaskManager_Toshmatov.ViewModels
             {
                 searchText = value;
                 OnPropertyChanged("SearchText");
-                SearchTasks();
+                ApplyFilters();
+            }
+        }
+
+        public Priority SelectedPriority
+        {
+            get { return selectedPriority; }
+            set
+            {
+                selectedPriority = value;
+                OnPropertyChanged("SelectedPriority");
+                ApplyFilters();
             }
         }
 
         public VM_Tasks()
         {
             tasksContext.Database.EnsureCreated();
-            allTasks = new ObservableCollection<Tasks>(tasksContext.Tasks.OrderBy(x => x.Done));
+
+            // Загружаем с учетом связей
+            allTasks = new ObservableCollection<Tasks>(
+                tasksContext.Tasks
+                    .Include(t => t.Priority)
+                    .OrderBy(t => t.Done)
+                    .ThenBy(t => t.Priority.Level)
+                    .ToList());
+
             Tasks = new ObservableCollection<Tasks>(allTasks);
+
+            // Загружаем приоритетов
+            Priorities = new ObservableCollection<Priority>(
+                tasksContext.Priorities.OrderBy(p => p.Level).ToList());
         }
 
-        public RealyCommand OnSearch
+        public void ApplyFilters()
         {
-            get
-            {
-                return new RealyCommand(obj =>
-                {
-                    SearchTasks();
-                });
-            }
-        }
+            var filtered = allTasks.AsEnumerable();
 
-        private void SearchTasks()
-        {
-            if (string.IsNullOrWhiteSpace(SearchText))
+            // Фильтр по поиску
+            if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                Tasks.Clear();
-                foreach (var task in allTasks)
-                {
-                    Tasks.Add(task);
-                }
-            }
-            else
-            {
-                var filteredTasks = allTasks.Where(x =>
+                filtered = filtered.Where(x =>
                     x.Name != null &&
-                    x.Name.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0
-                ).ToList();
+                    x.Name.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
 
-                Tasks.Clear();
-                foreach (var task in filteredTasks)
-                {
-                    Tasks.Add(task);
-                }
+            // Фильтр по приоритету
+            if (SelectedPriority != null)
+            {
+                filtered = filtered.Where(x => x.PriorityId == SelectedPriority.Id);
+            }
+
+            Tasks.Clear();
+            foreach (var task in filtered)
+            {
+                Tasks.Add(task);
             }
         }
 
@@ -80,18 +95,34 @@ namespace TaskManager_Toshmatov.ViewModels
                     {
                         Tasks newTask = new Tasks()
                         {
-                            DateExecute = DateTime.Now
+                            DateExecute = DateTime.Now,
+                            PriorityId = 2 
                         };
 
                         Tasks.Add(newTask);
                         allTasks.Add(newTask);
                         tasksContext.Tasks.Add(newTask);
                         tasksContext.SaveChanges();
+
+                        // Обновляем приоритет для нового объекта
+                        newTask.Priority = tasksContext.Priorities.Find(newTask.PriorityId);
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.InnerException?.Message ?? ex.Message);
                     }
+                });
+               
+            }            
+        }
+        public RealyCommand OnSearch
+        {
+            get
+            {
+                return new RealyCommand(obj =>
+                {
+                    SearchText = string.Empty;
+                    SelectedPriority = null;
                 });
             }
         }
